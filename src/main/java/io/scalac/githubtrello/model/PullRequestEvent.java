@@ -27,8 +27,8 @@ public class PullRequestEvent {
             return body;
         }
 
-        public Head getHead() {
-            return head;
+        public String getBranchName() {
+            return head.getRef();
         }
     }
 

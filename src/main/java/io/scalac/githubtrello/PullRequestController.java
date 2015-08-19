@@ -29,13 +29,16 @@ public class PullRequestController {
 
     private void onPullRequestOpened(PullRequestEvent.PullRequest pullRequest) {
         final TrelloCard[] trelloCards = trelloApi.getCards();
-        final String trelloCardShortLink = pullRequestParser.parseTrelloCardShortLink(pullRequest.getHead().getRef(), trelloCards);
+        final TrelloCard trelloCard = pullRequestParser.parseTrelloCard(pullRequest, trelloCards);
 
-        if (trelloCardShortLink.isEmpty()) {
-            System.out.println("No Trello link");
+        if (trelloCard == null) {
+            System.out.println("No Trello card found");
+        } else if (trelloCard.hasChecklist()) {
+            trelloApi.postChecklistToCard(trelloCard.getIdChecklist(), pullRequest.getHtmlUrl());
+            System.out.println(pullRequest.getHtmlUrl() + " posted to Trello card checklist " + trelloCard);
         } else {
-            trelloApi.postCommentToCard(trelloCardShortLink, pullRequest.getHtmlUrl());
-            System.out.println(pullRequest.getHtmlUrl() + " posted to Trello card " + trelloCardShortLink);
+            trelloApi.postCommentToCard(trelloCard.getShortLink(), pullRequest.getHtmlUrl());
+            System.out.println(pullRequest.getHtmlUrl() + " posted to Trello card " + trelloCard);
         }
-    }
+}
 }

@@ -26,10 +26,18 @@ public class TrelloApi {
     }
 
     public void postCommentToCard(String cardShortLink, String comment) {
-        byte[] postData = ("text=" + comment).getBytes(StandardCharsets.UTF_8);
+        post("https://api.trello.com/1/cards/" + cardShortLink + "/actions/comments", "text=" + comment);
+    }
+
+    public void postChecklistToCard(String idChecklist, String comment) {
+        post("https://api.trello.com/1/checklists/" + idChecklist + "/checkItems", "name=" + comment);
+    }
+
+    private void post(String urlString, String data) {
+        byte[] postData = data.getBytes(StandardCharsets.UTF_8);
         int postDataLength = postData.length;
         try {
-            URL url = new URL("https://api.trello.com/1/cards/" + cardShortLink + "/actions/comments?" + TRELLO_AUTH_QUERY);
+            URL url = new URL(urlString + "?" + TRELLO_AUTH_QUERY);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setInstanceFollowRedirects(false);
